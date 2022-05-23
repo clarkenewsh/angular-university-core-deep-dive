@@ -1,0 +1,62 @@
+<!-- if course object is true, show card (can use the elvis operator: ? on each object property although this is verbose) -->
+<!-- Add conditional class using ngClass if course has value of 'BEGINNER'. Best approach is to define a method to keep the template clean Can also pass an array of strings for multiple css classes -->
+<!-- [ngStyle] can be used to apply individual style to element is the same approach using a method [ngStyle]="cardStyles() -->
+<!-- ng-container can be used instead of a div to apply conditional structural rendering (dont apply a div just to apply conditional rendering. ng-container should be used in this situation) -->
+
+<ng-container *ngIf="course">
+  <div class="course-card" 
+	[ngClass]="cardClasses()">
+	<div class="course-title" [ngStyle]="cardStyles()">
+		{{cardIndex + ' ' + course.description}}
+	</div>
+
+	<!-- Use template block to display error message if course object image (ng-content) is not available - using 'else', blankImage template variable to place a placeholder image in ng-content block -->
+		<!-- ** commented out as now being used as with template instantiation with ngTemplateOutlet in app.component.html-->
+	<!-- <ng-template #blankImage>
+	  <p class="warn">{{course.description}} has no image is available</p>
+	  <img src="/assets/empty-image.png">
+	</ng-template> -->
+
+	<ng-content select="course-image"
+		*ngIf="course.iconUrl; else noImage">
+	  <!-- Course Img here using ng-content using content projection to show course image -->
+	</ng-content>
+
+	<!-- Instantiate template reference that was passed in - noImageTpl -->
+	<ng-template #noImage>
+		<ng-container *ngTemplateOutlet="noImageTpl; context:{description:course.description}"></ng-container>
+	</ng-template>
+
+	<div class="course-description">
+		{{course.longDescription}}
+	</div>
+
+	<!-- [ngSwitch] attr & *ngSwitchCase / *ngSwitchDefault structural directive, used to show course level  -->
+	<ng-container [ngSwitch]="course.category">
+	  <div class="course-category">
+		<ng-container *ngSwitchCase="'BEGINNER'">
+		  <div class="category" >
+			Beginner
+		  </div>
+		</ng-container>
+		<ng-container *ngSwitchCase="'INTERMEDIATE'">
+		  <div class="category" >
+			Intermediate
+		  </div>
+		</ng-container>
+		<ng-container *ngSwitchCase="'ADVANCED'">
+		  <div class="category" >
+			Advanced
+		  </div>
+		</ng-container>
+		<div class="category" *ngSwitchDefault>
+		  All Levels
+		</div>
+	  </div>
+	</ng-container>
+	
+
+	<button (click)="onCourseViewed()">View Course</button>
+
+  </div>
+</ng-container>
